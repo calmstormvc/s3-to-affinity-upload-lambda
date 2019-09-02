@@ -12,11 +12,11 @@ module.exports.upload_attachment = async (events, context) => {
 
   const event = events.Records[0];
   const { bucket: { name: bucket }, object: { key: objectKey } } = event.s3;
-  const fileName = decodeURIComponent(objectKey);
+  const fileName = decodeURIComponent(objectKey.replace(/\+/g, ' '));
 
   const { Body: fileBuffer } = await S3.getObject({
     Bucket: bucket,
-    Key: fileName,
+    Key: fileName
   }).promise();
 
   const fileInfo = util.parseFileInfo(objectKey);
@@ -27,3 +27,4 @@ module.exports.upload_attachment = async (events, context) => {
 
   return { message: `Processed file ${objectKey}`, event, res };
 };
+
